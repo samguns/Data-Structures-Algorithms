@@ -12,9 +12,14 @@ using std::queue;
 using std::pair;
 using std::priority_queue;
 
-struct indexWeight {
+class indexWeight {
+ public:
   int index;
   int weight;
+  indexWeight(int i, int w) {
+    index = i;
+    weight = w;
+  }
 };
 
 class weight_comp {
@@ -24,16 +29,34 @@ class weight_comp {
   }
 };
 
-typedef priority_queue<int, weight_comp> indexMinPQ;
-
 int distance(vector<vector<int> > &adj, vector<vector<int> > &cost, int s, int t) {
   size_t n = adj.size();
   vector<int> dist(n, INT_MAX);
-  indexMinPQ pq(weight_comp);
+  priority_queue<indexWeight, vector<indexWeight>, weight_comp> pq;
 
   dist[s] = 0;
-  pq.
-  return -1;
+  pq.emplace(indexWeight(s, dist[s]));
+
+  while (!pq.empty()) {
+    indexWeight iw = pq.top();
+    pq.pop();
+    int v = iw.index;
+
+    for (int i = 0; i < adj[v].size(); i++) {
+      int w = adj[v][i];
+      int d = dist[v] + cost[v][i];
+
+      if (dist[w] > d) {
+        dist[w] = d;
+        pq.push(indexWeight(w, dist[w]));
+      }
+    }
+  }
+
+  if (dist[t] == INT_MAX) {
+    return -1;
+  }
+  return dist[t];
 }
 
 int main() {
